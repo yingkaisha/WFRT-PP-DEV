@@ -1,15 +1,37 @@
 import numpy as np
 
 # ========== Parameters ========== #
-N_fcst = 54
-FCSTs = np.arange(9.0, 24*7+3, 3)
+N_leads_namelist = 54
 
-# ========== General path ========== #
-# Data and backup
+year_anen_namelist = np.arange(2000, 2019)
+year_mdss_namelist = np.arange(2000, 2019)
+
+ensemble_number_namelist = 25
+
+# -------------------------------- #
+
+LEADs_namelist = np.arange(0, N_leads_namelist, dtype=np.int)
+FCSTs_namelist = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
+
+# ========== Data file locations ========== #
+
+save_dir = '/glade/work/ksha/data/Keras/BIAS_publish/'
+BASE_dir = '/glade/scratch/ksha/DRIVE/BASE_DATA/'
+
+path_domain_namelist = save_dir+'BC_domain_info.hdf'
+path_sl_namelist = save_dir+'SL20_d4_unique.hdf'
+
+path_gefs_apcp_namelist = BASE_dir+'BASE_APCP_year{}_lead{}.zarr'
+path_gefs_pwat_namelist = BASE_dir+'BASE_PWAT_year{}_lead{}.zarr'
+path_era5_namelist = BASE_dir+'BASE_ERA5_year{}_lead{}.zarr'
+path_gefs_nrt_namelist = '/glade/scratch/ksha/DATA/GEFS/{}/'
+
+filename_gefs_namelist = 'geavg.t00z.pgrb2s.0p25'
+
 DATA_dir = '/glade/scratch/ksha/DATA/'
 BACKUP_dir = '/glade/scratch/ksha/BACKUP/'
 drive_dir = '/glade/scratch/ksha/DRIVE/'
-BASE_dir = '/glade/scratch/ksha/DRIVE/BASE_DATA/'
+
 
 # ========== Data ========== #
 
@@ -31,7 +53,7 @@ PRISM_dir = BACKUP_dir + 'PRISM/'
 # ======= Neural network ======= #
 
 # Path of model check point
-temp_dir = '/glade/work/ksha/data/Keras/'
+
 
 # Path of batch files
 BATCH_dir = DATA_dir+'REFCST_PCT/'
@@ -47,7 +69,7 @@ domain_inds = [120, 280, 120, 340]
 bc_inds = [73, 121, 36, 148]
 
 # Evaluation results
-save_dir = temp_dir + 'BIAS_publish/'
+
 
 # ========== Graphics ========== #
 
