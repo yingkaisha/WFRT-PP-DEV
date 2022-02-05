@@ -18,33 +18,25 @@ import nonDL_lib as nDL
 import utils
 from namelist_casper import * 
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('year_fcst', help='year_fcst')
-# parser.add_argument('part', help='part')
-# args = vars(parser.parse_args())
-# year_fcst = int(args['year_fcst'])
-# part_ = int(args['part'])
+# ========== Datetime informtion ========== #
 
-
-
+# UTC time
 dt_utc_now = datetime.utcnow()
 dt_fmt_string = datetime.strftime(dt_utc_now, '%Y%m%d')
-dt_day_of_year = dt_utc_now.timetuple().tm_yday
+
+# Day of the year (starts from zero)
+dt_day_of_year = dt_utc_now.timetuple().tm_yday - 1
+
+# Month (starts frp, zero)
 dt_month_from_zero = dt_utc_now.month-1
+
+# Leap vs non-leap year flag
 flag_leap_year = utils.leap_year_checker(dt_utc_now.year)
 
-# ========== Parse namelist args ========== #
+# ========== Import domain information ========== #
 
-EN = ensemble_number_namelist
-
-LEADs = LEADs_namelist
-N_leads = N_leads_namelist
-
-year_analog = year_anen_namelist
-year_mdss = year_mdss_namelist
-
-
-# importing domain information
+start_time = time.time()
+print('Import domain information ...')
 with h5py.File(path_domain_namelist, 'r') as h5io:
     lat_bc = h5io['bc_lat'][...] # lats of the BC domain
     lon_bc = h5io['bc_lon'][...] # lons of the BC domain
@@ -64,36 +56,44 @@ with h5py.File(path_sl_namelist , 'r') as h5io:
         SL_xy_dict['{}'.format(i)] = temp
 
 SL_xy = tuple(SL_xy_dict.values())
+print('\t ... done. {} sec'.format((time.time() - start_time)))
 
-AnEn_out = np.empty((N_leads, N_grids, EN))
+# ========== AnEn post-processing ========== #
 
-for i, lead in enumerate(LEADs):
+start_time = time.time()
+print('AnEn post-processing ...')
+
+AnEn_out = np.empty((N_leads_namelist, N_grids, ensemble_number_namelist))
+
+for i, lead in enumerate(LEADs_namelist):
     lead_int_h = int(FCSTs_namelist[lead])
-    print("Processing lead time = {}".format(lead))
-    #print("Main program starts ...")
-    # ------------------------------------------------- #
+    
+    print("\tLead time = {}".format(lead))
     
     # Import reforecast
+    # ------------------------------------------------- #
+    
     APCP = ()
     PWAT = ()
     
-    for year in year_analog:
+    for year in year_anen_namelist:
         apcp_temp = zarr.load(path_gefs_apcp_namelist.format(year, lead))
         pwat_temp = zarr.load(path_gefs_pwat_namelist.format(year, lead))
         
         APCP += (apcp_temp,)
         PWAT += (pwat_temp,)
-        
-    # ------------------------------------------------- #
     
     # Import reanalysis
+    # ------------------------------------------------- #
+    
     ERA5 = ()
     
-    for year in year_analog:
+    for year in year_anen_namelist:
         era_temp = zarr.load(path_era5_namelist.format(year, lead))
         
         ERA5 += (era_temp,)
-        
+    
+    # Import today's GEFS 
     # ------------------------------------------------- #
     
     GEFS_dir_base = path_gefs_nrt_namelist.format(dt_fmt_string)
@@ -113,13 +113,83 @@ for i, lead in enumerate(LEADs):
     apcp_flat = apcp[ocean_mask_bc]
     pwat_flat = apcp[ocean_mask_bc]
     
-    start_time = time.time()
-    AnEn = nDL.analog_search_SL_single_day(dt_day_of_year, year_analog, apcp_flat, pwat_flat, APCP, PWAT, ERA5, EN, SL_xy, flag_leap_year)
-    #print("... Completed. Time = {} sec ".format((time.time() - start_time)))
+    # AnEn search
+    # ------------------------------------------------- #
     
+    AnEn = nDL.analog_search_SL_single_day(dt_day_of_year, year_anen_namelist, apcp_flat, pwat_flat, 
+                                           APCP, PWAT, ERA5, ensemble_number_namelist, SL_xy, flag_leap_year)    
     AnEn_out[i, ...] = AnEn
     
+print('\t ... done. {} sec'.format((time.time() - start_time)))
+
+# ========== Import MDSS database ========== #
+
+start_time = time.time()
+print('Import MDSS database ...')
+
+ERA5_mdss = ()
+
+window_day = 30
+N_days = window_day*2 + 1
+
+# loop over years for MDSS training
+for year in year_mdss_namelist:
     
+    # separate leap year
+    if utils.leap_year_checker(year):
+        flag_pick = nDL.search_nearby_days(dt_day_of_year, window=30, leap_year=True)
+    else:
+        flag_pick = nDL.search_nearby_days(dt_day_of_year, window=30, leap_year=False)
+        
+    flag_pick = flag_pick == 1
+    era_all_lead = np.empty((N_days, N_grids, N_leads_namelist))
+    
+    # loop over lead times
+    for i, lead in enumerate(LEADs_namelist):
+        era_temp = zarr.load(BASE_dir+'BC_ERA5_year{}_lead{}.zarr'.format(year, lead))
+        era_all_lead[..., i] = era_temp[flag_pick, :]
+    
+    ERA5_mdss += (era_all_lead,)
+
+ERA5_mdss = np.concatenate(ERA5_mdss)
+
+print('\t ... done. {} sec'.format((time.time() - start_time)))
+
+# ========== MDSS post-processing ========== #
+
+start_time = time.time()
+print('MDSS post-processing ...')
+
+AnEn_out = np.transpose(AnEn_out, (2, 0, 1))
+ERA5_mdss = np.transpose(ERA5_mdss, (0, 2, 1))
+
+flag_pick = nDL.search_nearby_days(dt_day_of_year, window=30, leap_year=True)
+flag_clean, count_trial = nDL.MDSS_main(ERA5_mdss, AnEn_out, factor=5, max_trial=50000)
+
+if count_trial > ensemble_number_namelist:
+    print('\t Warning: The MDSS does not coverge fully. Number of sequence: {}, expecting: {}'.format(count_trial, ensemble_number_namelist))
+else:
+    print('\t The MDSS has converged.')
+
+print('Schaake Shuffle starts ...')
+
+ERA5_pick = ERA5_mdss[flag_clean][:ensemble_number_namelist, ...]                                                                                       
+AnEn_MDSS_out = nDL.schaake_shuffle(AnEn_out, ERA5_pick)
+
+print('\t ... MDSS done. {} sec'.format((time.time() - start_time)))
+
+# ========== Save output ========== #
+
+print('Save output ...')
+
+anen_grid = np.empty((ensemble_number_namelist, N_leads_namelist,)+bc_shape)
+for en in range(ensemble_number_namelist):
+    for l in LEADs_namelist:
+        anen_grid[en, l, ocean_mask_bc] = AnEn_MDSS_out[en, l, :]
+anen_grid[..., land_mask_bc] = np.nan
+
+name_output = filename_output_namelist.format(dt_fmt_string)
+utils.save_hdf5((anen_grid,), ['gefs_apcp',], output_dir_namelist, name_output)
 
 
 
