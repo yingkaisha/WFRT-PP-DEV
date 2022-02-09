@@ -1,8 +1,13 @@
 
+'''
+* Post-processed precipitation as an unit of mm per 3 hours 
+'''
+
 # sys tools
 import sys
 import time
 import argparse
+import os.path
 
 # data tools
 import h5py
@@ -32,6 +37,35 @@ dt_month_from_zero = dt_utc_now.month-1
 
 # Leap vs non-leap year flag
 flag_leap_year = utils.leap_year_checker(dt_utc_now.year)
+
+# ========== Check if files exist ========== #
+
+flag_exist = True
+
+print('Checking file existence')
+
+for i, lead in enumerate(LEADs_namelist):
+    
+    lead_int_h = int(FCSTs_namelist[lead])
+    
+    # GEFS file path creation
+    GEFS_dir_base = path_gefs_nrt_namelist.format(dt_fmt_string)
+    GEFS_dir_full = GEFS_dir_base+filename_gefs_namelist+'.f{0:03d}'.format(lead_int_h)
+    
+    # check file existence
+    flag_temp = os.path.isfile(GEFS_dir_full)
+    
+    # raise in terms of missing files
+    if flag_temp is False:
+        print('\tNot found: {}'.format(GEFS_dir_full))
+    
+        flag_exist = False
+
+# exit the main program if any files missing
+if flag_exist is False:
+    
+    print('The main program is terminated for missing files')
+    sys.exit()
 
 # ========== Import domain information ========== #
 
@@ -70,8 +104,8 @@ for i, lead in enumerate(LEADs_namelist):
     
     print("\tLead time = {}".format(lead))
     
-    # Import reforecast
-    # ------------------------------------------------- #
+    # Import reforecast (Numpy arrays saved as zarr format)
+    # ------------------------------------------------------ #
     
     APCP = ()
     PWAT = ()
@@ -83,8 +117,8 @@ for i, lead in enumerate(LEADs_namelist):
         APCP += (apcp_temp,)
         PWAT += (pwat_temp,)
     
-    # Import reanalysis
-    # ------------------------------------------------- #
+    # Import reanalysis (Numpy arrays saved as zarr format)
+    # ----------------------------------------------------- #
     
     ERA5 = ()
     
@@ -94,18 +128,20 @@ for i, lead in enumerate(LEADs_namelist):
         ERA5 += (era_temp,)
     
     # Import today's GEFS 
-    # ------------------------------------------------- #
+    # ----------------------------------------------------- #
     
+    # GEFS file path creation
     GEFS_dir_base = path_gefs_nrt_namelist.format(dt_fmt_string)
     GEFS_dir_full = GEFS_dir_base+filename_gefs_namelist+'.f{0:03d}'.format(lead_int_h)
     
     with pygrib.open(GEFS_dir_full) as grb_io:
-        #
+        
+        # Import APCP from today's forecast
         grb_reader_apcp = grb_io.select(name='Total Precipitation')[0]
         apcp, _, _ = grb_reader_apcp.data(lat1=48.25, lat2=60.00, lon1=-141.0+360, lon2=-113.25+360)
         apcp = np.flipud(apcp) # GEFS default: kg/m**-2 (or mm) per 3 hours
         
-        #
+        # Import PWAT from today's forecast
         grb_reader_pwat = grb_io.select(name='Precipitable water')[0]
         pwat, _, _ = grb_reader_pwat.data(lat1=48.25, lat2=60.00, lon1=-141.0+360, lon2=-113.25+360)
         pwat = np.flipud(pwat) # GEFS default: kg/m**-2 (or mm) per 3 hours
@@ -114,7 +150,7 @@ for i, lead in enumerate(LEADs_namelist):
     pwat_flat = apcp[ocean_mask_bc]
     
     # AnEn search
-    # ------------------------------------------------- #
+    # ------------------------------------------------------ #
     
     AnEn = nDL.analog_search_SL_single_day(dt_day_of_year, year_anen_namelist, apcp_flat, pwat_flat, 
                                            APCP, PWAT, ERA5, ensemble_number_namelist, SL_xy, flag_leap_year)    
@@ -187,6 +223,7 @@ for en in range(ensemble_number_namelist):
     for l in LEADs_namelist:
         anen_grid[en, l, ocean_mask_bc] = AnEn_MDSS_out[en, l, :]
 anen_grid[..., land_mask_bc] = np.nan
+
 
 name_output = filename_output_namelist.format(dt_fmt_string)
 utils.save_hdf5((anen_grid,), ['gefs_apcp',], output_dir_namelist, name_output)
