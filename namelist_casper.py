@@ -18,7 +18,7 @@ year_anen_namelist = np.arange(2000, 2019)
 year_mdss_namelist = np.arange(2000, 2019)
 
 # The number of ensemble member output 
-ensemble_number_namelist = 25
+ensemble_number_namelist = 75
 
 # -------------------------------- #
 
@@ -50,6 +50,9 @@ path_era5_namelist = BASE_dir+'BASE_ERA5_year{}_lead{}.zarr'
 
 output_dir_namelist = '/glade/scratch/ksha/DRIVE/'
 filename_output_namelist = 'gefs_nonDL_{}.hdf'
+
+# ----------------------------------------------- #
+
 
 # # Other old path
 
