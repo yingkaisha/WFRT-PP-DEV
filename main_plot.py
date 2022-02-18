@@ -1,6 +1,5 @@
 
 # graph tools
-import cmaps
 import cartopy.crs as ccrs
 import cartopy.mpl.geoaxes
 import cartopy.feature as cfeature
