@@ -21,7 +21,11 @@ sys.path.insert(0, '/glade/u/home/ksha/PUBLISH/WFRT-PP-DEV/libs/')
 
 import nonDL_lib as nDL
 import utils
-from namelist_casper import * 
+
+# !!!! <---- change to your namelist
+from namelist_template import * 
+#
+
 
 # ========== Datetime informtion ========== #
 

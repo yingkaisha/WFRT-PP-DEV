@@ -1,0 +1,11 @@
+h5py==2.10.0
+basemap==1.2.1
+Cartopy==0.18.0b2
+pygrib==2.0.4
+numpy==1.19.5
+scipy==1.5.4
+numba==0.48.0
+zarr==2.4.0
+tensorflow_gpu==2.4.1
+matplotlib==3.2.1
+tensorflow==2.8.0

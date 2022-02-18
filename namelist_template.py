@@ -27,8 +27,10 @@ FCSTs_namelist = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
 
 # ========== Data file locations ========== #
 
-# The path of near-real-time GEFS
+# CHANGE: The path of near-real-time GEFS
 path_gefs_nrt_namelist = '/glade/scratch/ksha/DATA/GEFS/{}/'
+
+#
 filename_gefs_namelist = 'geavg.t00z.pgrb2s.0p25'
 
 # The path of reference data and geographical data

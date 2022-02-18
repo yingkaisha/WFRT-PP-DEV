@@ -1,6 +1,8 @@
 
 '''
-xxxx
+This Python script contains functions used my the "main_nonDL.py" script.
+
+
 '''
 
 import numpy as np
@@ -9,7 +11,7 @@ import numba as nb
 @nb.njit()
 def shift_one(arr):
     """
-    !!! an interal function, do not touch.
+    !!! interal function, do not touch.
     """
     arr[1:] = arr[:-1]
     return arr
