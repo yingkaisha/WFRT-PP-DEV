@@ -3,13 +3,11 @@
 * Post-processed precipitation as an unit of mm per 3 hours 
 '''
 
-# sys tools
+import os
 import sys
 import time
 import argparse
-import os.path
 
-# data tools
 import h5py
 import zarr
 import pygrib
@@ -25,28 +23,51 @@ import utils
 # !!!! <---- change to your namelist
 from namelist_template import * 
 #
-
-
 # ========== Datetime informtion ========== #
 
-# UTC time
-dt_utc_now = datetime.utcnow()
-dt_fmt_string = datetime.strftime(dt_utc_now, '%Y%m%d')
+# Parser
+parser = argparse.ArgumentParser()
+parser.add_argument('date_str', help='date_str. e.g., 20100101')
+args = vars(parser.parse_args())
+
+# Datetime info
+dt_fmt = args['date_str']
+if dt_fmt == 'auto':
+    dt_utc_now = datetime.utcnow()
+    dt_fmt_string = datetime.strftime(dt_utc_now, '%Y%m%d')
+else:
+    dt_fmt_string = dt_fmt
+    dt_utc_now = datetime.strptime(dt_fmt_string, '%Y%m%d')
 
 # Day of the year (starts from zero)
 dt_day_of_year = dt_utc_now.timetuple().tm_yday - 1
 
-# Month (starts frp, zero)
+# Month (starts from zero)
 dt_month_from_zero = dt_utc_now.month-1
 
 # Leap vs non-leap year flag
 flag_leap_year = utils.leap_year_checker(dt_utc_now.year)
+
+# ========== output folder and status file ========== #
+
+output_dir = output_dir_namelist.format(dt_fmt_string)
+
+# Create folder if not exist
+if os.path.isdir(output_dir) is False:
+    os.mkdir(output_dir)
+
+# (if this script runs successfully, status will be over-written to "1")
+status=0
+with open(output_dir+"nowcast_kyle.status", "w") as log_io:
+    log_io.write(str(status))
 
 # ========== Check if files exist ========== #
 
 flag_exist = True
 
 print('Checking file existence')
+
+count = 0
 
 for i, lead in enumerate(LEADs_namelist):
     
@@ -59,17 +80,25 @@ for i, lead in enumerate(LEADs_namelist):
     # check file existence
     flag_temp = os.path.isfile(GEFS_dir_full)
     
-    # raise in terms of missing files
+    # raise msg in terms of missing files
     if flag_temp is False:
         print('\tNot found: {}'.format(GEFS_dir_full))
-    
         flag_exist = False
+        break;
+    else:
+        count += 1
 
-# exit the main program if any files missing
-if flag_exist is False:
-    
-    print('The main program is terminated for missing files')
-    sys.exit()
+# Update lead time settings if files are "in part" missing
+if count > 0:
+    print('{} files available; {} files missing'.format(count, N_leads_namelist-count))
+    # update based on available files
+    N_leads_namelist = count
+    LEADs_namelist = np.arange(0, N_leads_namelist, dtype=np.int)
+    FCSTs_namelist = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
+# terminate if all files missing
+else:
+    sys.exit('The main program is terminated because of missing files')  
+
 
 # ========== Import domain information ========== #
 
@@ -204,7 +233,7 @@ AnEn_out = np.transpose(AnEn_out, (2, 0, 1))
 ERA5_mdss = np.transpose(ERA5_mdss, (0, 2, 1))
 
 flag_pick = nDL.search_nearby_days(dt_day_of_year, window=30, leap_year=True)
-flag_clean, count_trial = nDL.MDSS_main(ERA5_mdss, AnEn_out, factor=5, max_trial=50000)
+flag_clean, count_trial = nDL.MDSS_main(ERA5_mdss, AnEn_out, factor=5, max_trial=10000)
 
 if count_trial > ensemble_number_namelist:
     print('\t Warning: The MDSS does not coverge fully. Number of sequence: {}, expecting: {}'.format(count_trial, ensemble_number_namelist))
@@ -230,7 +259,13 @@ anen_grid[..., land_mask_bc] = np.nan
 
 
 name_output = filename_output_namelist.format(dt_fmt_string)
-utils.save_hdf5((anen_grid,), ['gefs_apcp',], output_dir_namelist, name_output)
+utils.save_hdf5((anen_grid,), ['gefs_apcp',], output_dir, name_output)
 
+# ========== write "1" in status file ========== #
+
+if flag_exist is True:
+    status=1
+    with open(output_dir+"nowcast_kyle.status", "w") as log_io:
+        log_io.write(str(status))
 
 

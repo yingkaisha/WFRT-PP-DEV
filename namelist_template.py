@@ -28,6 +28,7 @@ FCSTs_namelist = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
 # ========== Data file locations ========== #
 
 # CHANGE: The path of near-real-time GEFS
+# e.g., ?'/nfs/kitsault/home/ibcs/GEFS0p25/{}'
 path_gefs_nrt_namelist = '/glade/scratch/ksha/DATA/GEFS/{}/'
 
 #
@@ -50,11 +51,12 @@ path_era5_namelist = BASE_dir+'BASE_ERA5_year{}_lead{}.zarr'
 
 # ========== Output ========== #
 
-output_dir_namelist = '/glade/scratch/ksha/DRIVE/'
+output_dir_namelist = '/glade/scratch/ksha/DRIVE/{}/'
+status_dir_namelist = '/glade/scratch/ksha/DRIVE/{}/'
+
 filename_output_namelist = 'gefs_nonDL_{}.hdf'
 
 # ----------------------------------------------- #
-
 
 # # Other old path
 
