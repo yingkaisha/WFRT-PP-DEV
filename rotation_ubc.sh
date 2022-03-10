@@ -12,6 +12,7 @@ echo "[`date +"%F %T %Z"`] Starting ${0} ..."
 current_time=$(date -u +%Y%m%d)
 
 # <---------- !!!! status file
+# Double check --> "status_dir_namelist" @ namelist_ubc.py
 nowcast_status="/glade/scratch/ksha/DRIVE/${current_time}/nowcast_kyle.status"
 # ------------------------------------- #
 
