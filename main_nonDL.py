@@ -21,7 +21,7 @@ import nonDL_lib as nDL
 import utils
 
 # !!!! <---- change to your namelist
-from namelist_template import * 
+from namelist_ubc import * 
 #
 # ========== Datetime informtion ========== #
 
