@@ -30,6 +30,7 @@ while $run; do
         echo "Raw forecasts do not exist, waiting 30 min ..."
         sleep 1800
     else
+        python3 main_DL.py $current_time
         run=false
     fi
 done
