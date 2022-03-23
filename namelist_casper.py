@@ -45,12 +45,14 @@ path_sl_namelist = save_dir+'SL20_d4_unique.hdf'
 path_gefs_apcp_namelist = BASE_dir+'BASE_APCP_year{}_lead{}.zarr'
 path_gefs_pwat_namelist = BASE_dir+'BASE_PWAT_year{}_lead{}.zarr'
 path_era5_namelist = BASE_dir+'BASE_ERA5_year{}_lead{}.zarr'
+path_era5_clim_namelist = BASE_dir+'BASE_ERA5_clim.zarr'
+path_CNN_namelist = BASE_dir+'AnEn_UNET3M_RAW_tune.hdf'
 
 # ========== Output ========== #
 
-output_dir_namelist = '/glade/scratch/ksha/DRIVE/'
+output_dir_namelist = '/glade/scratch/ksha/DRIVE/{}/'
 filename_output_namelist = 'gefs_nonDL_{}.hdf'
-
+filename_CNN_output_namelist = 'gefs_CNN_{}.hdf'
 # ----------------------------------------------- #
 
 

@@ -33,8 +33,8 @@ status_dir_namelist = '/glade/scratch/ksha/DRIVE/{}/'
 
 
 # !!!! <----- Output filename, e.g., gefs_nonDL_20220310.hdf
-filename_output_namelist = 'gefs_nonDL_{}.hdf'
-
+filename_output_namelist = 'gefs_nonDL_{}.hdf' # AnEn and MDSS only
+filename_CNN_output_namelist = 'gefs_CNN_{}.hdf' # AnEn+MDSS+CNN
 # ---------------------------------------------------------------- #
 
 # ========== Parameters ========== #
@@ -56,7 +56,7 @@ LEADs_namelist = np.arange(0, N_leads_namelist, dtype=np.int)
 FCSTs_namelist = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
 
 
-# ---------- DO NOT Touch ---------- #
+# ---------- Touch with caution ---------- #
 
 filename_gefs_namelist = 'geavg.t00z.pgrb2s.0p25'
 
@@ -66,4 +66,5 @@ path_sl_namelist = save_dir+'SL20_d4_unique.hdf'
 path_gefs_apcp_namelist = BASE_dir+'BASE_APCP_year{}_lead{}.zarr'
 path_gefs_pwat_namelist = BASE_dir+'BASE_PWAT_year{}_lead{}.zarr'
 path_era5_namelist = BASE_dir+'BASE_ERA5_year{}_lead{}.zarr'
-
+path_era5_clim_namelist = BASE_dir+'BASE_ERA5_clim.zarr'
+path_CNN_namelist = BASE_dir+'AnEn_UNET3M_RAW_tune.hdf'
