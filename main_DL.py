@@ -89,10 +89,9 @@ print('\t ... done. {} sec'.format((time.time() - start_time)))
 
 # ========== CNN preparation ========== #
 
-# Ensemble dressing
-gefs_dress = nDL.dressing_norm_2d(gefs_apcp, ~land_mask_bc, folds=3, k1=0.0, k2=0.5)
-
 # Normalize precip
+gefs_dress = gefs_apcp
+gefs_dress[..., land_mask_bc] = 0.0 # nan --> 0.0
 
 temp_precip = gefs_dress
 temp_precip[temp_precip<0] = 0
@@ -154,6 +153,9 @@ for lead in range(N_leads):
 print('\t ... done. {} sec'.format((time.time() - start_time)))
 
 # ========== save ========== #
+
+## <--- !!! land mask no applied yet (will apply in the plotting section)
+## <--- !!! CNN output may contain small negative values
 
 name_output = filename_CNN_output_namelist.format(dt_fmt_string)
 utils.save_hdf5((CNN_output,), ['gefs_apcp',], output_dir, name_output)

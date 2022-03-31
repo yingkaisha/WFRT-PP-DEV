@@ -10,6 +10,7 @@ echo
 echo "[`date +"%F %T %Z"`] Starting ${0} ..."
 
 current_time=$(date -u +%Y%m%d)
+#e.g., current_time="20220330"
 
 # <---------- !!!! status file
 # Double check --> "status_dir_namelist" @ namelist_ubc.py

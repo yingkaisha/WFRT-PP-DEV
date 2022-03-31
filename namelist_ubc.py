@@ -49,7 +49,7 @@ year_anen_namelist = np.arange(2000, 2019)
 year_mdss_namelist = np.arange(2000, 2019)
 
 # The number of ensemble member output 
-ensemble_number_namelist = 25
+ensemble_number_namelist = 75
 
 # Num of forecast lead time to lists
 LEADs_namelist = np.arange(0, N_leads_namelist, dtype=np.int)

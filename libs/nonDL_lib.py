@@ -509,6 +509,24 @@ def schaake_shuffle(fcst, traj):
 
 
 @nb.njit()
+def dressing_norm_flat(fcst, folds, k1, k2):
+    '''
+    AnEn dressing
+    '''
+    N_lead, N_grids, EN = fcst.shape
+    out = np.empty((N_lead, N_grids, EN*folds))
+    
+    for en in range(EN):
+        for lead in range(N_lead):
+            for ix in range(N_grids):
+                for f in range(folds):
+                    base_ = fcst[lead, ix, en]
+                    std_ = k1 + k2*base_
+                    dress_ = np.random.normal(loc=0.0, scale=std_)
+                    out[lead, ix, en*folds+f] = fcst[lead, ix, en] + dress_          
+    return out
+
+@nb.njit()
 def dressing_norm_2d(fcst, land_mask, folds, k1, k2):
     '''
     AnEn dressing

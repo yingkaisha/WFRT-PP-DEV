@@ -21,7 +21,7 @@ import nonDL_lib as nDL
 import utils
 
 # !!!! <---- change to your namelist
-from namelist_ubc import * 
+from namelist_casper import * 
 #
 # ========== Datetime informtion ========== #
 
@@ -191,6 +191,14 @@ for i, lead in enumerate(LEADs_namelist):
     
 print('\t ... done. {} sec'.format((time.time() - start_time)))
 
+# # ========== AnEn dressing ========== #
+
+# Ensemble dressing
+AnEn_out = nDL.dressing_norm_flat(AnEn_out, folds=1, k1=0.0, k2=0.5)
+AnEn_out[AnEn_out<0] = 0
+print(AnEn_out.shape)
+# # ensemble_number_namelist = AnEn_out.shape[-1]
+
 # ========== Import MDSS database ========== #
 
 start_time = time.time()
@@ -233,7 +241,7 @@ AnEn_out = np.transpose(AnEn_out, (2, 0, 1))
 ERA5_mdss = np.transpose(ERA5_mdss, (0, 2, 1))
 
 flag_pick = nDL.search_nearby_days(dt_day_of_year, window=30, leap_year=True)
-flag_clean, count_trial = nDL.MDSS_main(ERA5_mdss, AnEn_out, factor=5, max_trial=10000)
+flag_clean, count_trial = nDL.MDSS_main(ERA5_mdss, AnEn_out, factor=5, max_trial=5000)
 
 if count_trial > ensemble_number_namelist:
     print('\t Warning: The MDSS does not coverge fully. Number of sequence: {}, expecting: {}'.format(count_trial, ensemble_number_namelist))
