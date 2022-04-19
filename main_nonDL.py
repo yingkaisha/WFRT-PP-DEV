@@ -196,7 +196,7 @@ print('\t ... done. {} sec'.format((time.time() - start_time)))
 # Ensemble dressing
 AnEn_out = nDL.dressing_norm_flat(AnEn_out, folds=1, k1=0.0, k2=0.5)
 AnEn_out[AnEn_out<0] = 0
-print(AnEn_out.shape)
+# print(AnEn_out.shape)
 # # ensemble_number_namelist = AnEn_out.shape[-1]
 
 # ========== Import MDSS database ========== #

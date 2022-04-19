@@ -154,8 +154,8 @@ print('\t ... done. {} sec'.format((time.time() - start_time)))
 
 # ========== save ========== #
 
-## <--- !!! land mask no applied yet (will apply in the plotting section)
-## <--- !!! CNN output may contain small negative values
+CNN_output = nDL.cnn_precip_fix(CNN_output)
+CNN_output[..., land_mask_bc] = np.nan
 
 name_output = filename_CNN_output_namelist.format(dt_fmt_string)
 utils.save_hdf5((CNN_output,), ['gefs_apcp',], output_dir, name_output)

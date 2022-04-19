@@ -31,6 +31,12 @@ FCSTs_namelist = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
 path_gefs_nrt_namelist = '/glade/scratch/ksha/DATA/GEFS/{}/'
 filename_gefs_namelist = 'geavg.t00z.pgrb2s.0p25'
 
+# The path of individual GEFS members
+path_gefs_member_namelist = '/glade/scratch/ksha/DATA/GEFS/{}_members/'
+filename_memberc_namelist = 'gec{:02d}.t00z.pgrb2s.0p25.f{:03d}'
+filename_memberp_namelist = 'gep{:02d}.t00z.pgrb2s.0p25.f{:03d}'
+ensemble_mumberp_raw_gefs_namelist = 29
+
 # The path of reference data and geographical data
 save_dir = '/glade/work/ksha/data/Keras/BIAS_publish/'
 
@@ -103,15 +109,15 @@ filename_CNN_output_namelist = 'gefs_CNN_{}.hdf'
 # # ========== Graphics ========== #
 
 # # figure storage
-# fig_dir = '/glade/u/home/ksha/figures/'
+fig_dir = '/glade/u/home/ksha/figures/'
 
-# # Matplotlib figure export settings
-# fig_keys = {'dpi':250, 
-#             'orientation':'portrait', 
-#             'papertype':'a4',
-#             'bbox_inches':'tight', 
-#             'pad_inches':0.1, 
-#             'transparent':False}
+# Matplotlib figure export settings
+fig_keys = {'dpi':250, 
+            'orientation':'portrait', 
+            'papertype':'a4',
+            'bbox_inches':'tight', 
+            'pad_inches':0.1, 
+            'transparent':False}
 
 # # colors
 # rgb_array = np.array([[0.85      , 0.85      , 0.85      , 1.        ],
