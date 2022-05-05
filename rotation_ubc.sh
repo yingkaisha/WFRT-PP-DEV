@@ -17,8 +17,6 @@ current_time=$(date -u +%Y%m%d)
 # Double check --> "status_dir_namelist" @ namelist_ubc.py
 nowcast_status="/oper_data/NowCastingML/example_output/${current_time}/nowcast_kyle.status"
 download_status="/oper_data/NowCastingML/GEFS_downloads/${current_time}_members/download.status"
-
-#nowcast_status="/oper_data/NowCastingML/nowcastingml/nowcast_kyle.status"
 # ------------------------------------- #
 
 run=true
@@ -27,7 +25,7 @@ while $run; do
     
     cd $PWD
     bash ./GEFS/main.sh
-    bash ./GEFS/main_members.sh
+    #bash ./GEFS/main_members.sh
     
     download_info=$(cat $download_status)
     flag_download=$[10#${download_info:0:2}]
@@ -51,7 +49,7 @@ while $run; do
             echo "Deep learning routine starts"
             python3 main_DL.py $current_time
             echo "Plot routine starts"
-            python3 main_plot.py $current_time
+            #python3 main_plot.py $current_time
          
             rm -r /oper_data/NowCastingML/GEFS_downloads/${current_time}/
             rm -r /oper_data/NowCastingML/GEFS_downloads/${current_time}_members/

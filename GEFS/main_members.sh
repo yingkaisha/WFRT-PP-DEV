@@ -12,10 +12,8 @@ echo "[`date +"%F %T %Z"`] Starting ${0} ..."
 current_time=$(date -u +%Y%m%d)
 #current_time='20220406'
 # ---------- UBC/NCAR Switch ---------- #
-# UBC
-#download_status="/home/ibcs/GEFS0p25/${current_time}/download.status"
-# NCAR
-download_status="/glade/scratch/ksha/DATA/GEFS/${current_time}_members/download.status"
+#
+download_status="/oper_data/NowCastingML/GEFS_downloads/${current_time}_members/download.status"
 # ------------------------------------- #
 
 run=true
