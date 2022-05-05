@@ -14,8 +14,11 @@ import pygrib
 import numpy as np
 from datetime import datetime
 
-sys.path.insert(0, '/glade/u/home/ksha/PUBLISH/WFRT-PP-DEV/')
-sys.path.insert(0, '/glade/u/home/ksha/PUBLISH/WFRT-PP-DEV/libs/')
+base_dir = os.getcwd()
+lib_dir = base_dir + '/libs/'
+
+sys.path.insert(0, base_dir)
+sys.path.insert(0, lib_dir)
 
 import nonDL_lib as nDL
 import utils

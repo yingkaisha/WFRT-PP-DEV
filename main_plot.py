@@ -15,8 +15,11 @@ from datetime import datetime
 
 import cartopy.feature as cfeature
 
-sys.path.insert(0, '/glade/u/home/ksha/PUBLISH/WFRT-PP-DEV/')
-sys.path.insert(0, '/glade/u/home/ksha/PUBLISH/WFRT-PP-DEV/libs/')
+base_dir = os.getcwd()
+lib_dir = base_dir + '/libs/'
+
+sys.path.insert(0, base_dir)
+sys.path.insert(0, lib_dir)
 
 import utils
 import plot_lib as plib
@@ -77,7 +80,7 @@ CNN_output[..., land_mask_bc] = np.nan
 
 # -------------------- Raw GEFS members -------------------- #
 
-GEFS_raw = np.empty((ensemble_mumberp_raw_gefs_namelist+1, N_leads_namelist)+grid_shape)
+GEFS_raw = np.empty((ensemble_mumber, p_raw_gefs_namelist+1, N_leads_namelist)+grid_shape)
 
 # GEFS file path creation
 GEFS_dir_base = path_gefs_member_namelist.format(dt_fmt_string)
