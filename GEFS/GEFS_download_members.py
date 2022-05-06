@@ -21,7 +21,8 @@ if dt_fmt == 'auto':
 print("Downloading GEFS for {}".format(dt_fmt))
 
 # set up download directory
-target_dir = target_path.format(dt_fmt)
+target_dir = target_path_members.format(dt_fmt)
+
 if os.path.isdir(target_dir):
     print("{} already exists".format(target_dir))
 else:
@@ -31,7 +32,7 @@ else:
 # downloading status
 status = 0
 
-for lead_ in fcst_leads[::-1][4:]:
+for lead_ in fcst_leads:
     
     for member_ in range(N_member):
         

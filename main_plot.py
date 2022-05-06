@@ -28,7 +28,7 @@ from namelist_plot import *
 
 
 # !!!! <---- change to your namelist
-from namelist_casper import * 
+from namelist_ubc import * 
 #
 # ========== Datetime informtion ========== #
 

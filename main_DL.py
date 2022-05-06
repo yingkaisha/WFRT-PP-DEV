@@ -25,7 +25,7 @@ import DL_lib as DL
 import nonDL_lib as nDL
 
 # !!!! <---- change to your namelist
-from namelist_casper import * 
+from namelist_ubc import * 
 #
 
 # Parser
