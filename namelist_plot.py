@@ -25,6 +25,6 @@ png_bch_name['accum_'] = 'qpf{}{}hb'
 png_bch_name['pth'] = ['10p','50p','90p']
 png_bch_name['dt_fmt_'] = '%Y%m%d%H'
 png_bch_name['tail'] = '{:03d}.png'
-png_bch_name['dir'] = '/oper_data/NowCastingML/example_output/'
-#png_bch_name['dir'] = '/www/results/BCHGRD1/YYMMDDHH/PNG/g2/'
+#png_bch_name['dir'] = '/oper_data/NowCastingML/example_output/'
+png_bch_name['dir'] = '/www/results/BCHGRD1/YYMMDDHH/PNG/g2/'
 

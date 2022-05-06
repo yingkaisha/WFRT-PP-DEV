@@ -1,4 +1,3 @@
-
 '''
 * Post-processed precipitation as an unit of mm per 3 hours 
 '''
@@ -80,7 +79,7 @@ CNN_output[..., land_mask_bc] = np.nan
 
 # -------------------- Raw GEFS members -------------------- #
 
-GEFS_raw = np.empty((ensemble_mumber, p_raw_gefs_namelist+1, N_leads_namelist)+grid_shape)
+GEFS_raw = np.empty((ensemble_mumberp_raw_gefs_namelist+1, N_leads_namelist)+grid_shape)
 
 # GEFS file path creation
 GEFS_dir_base = path_gefs_member_namelist.format(dt_fmt_string)
@@ -113,13 +112,13 @@ DATA = {}
 LEADs_3H_ind = np.arange(0, N_leads_namelist, dtype=np.int)
 LEADs_3H_hrs = np.arange(9.0, 24*7+3, 3)[:N_leads_namelist]
 
-DATA['CNN_3_P10'] = np.quantile(CNN_output, 0.1, axis=0)
-DATA['CNN_3_P50'] = np.quantile(CNN_output, 0.5, axis=0)
-DATA['CNN_3_P90'] = np.quantile(CNN_output, 0.9, axis=0)
+DATA['CNN_3_10p'] = np.quantile(CNN_output, 0.1, axis=0)
+DATA['CNN_3_50p'] = np.quantile(CNN_output, 0.5, axis=0)
+DATA['CNN_3_90p'] = np.quantile(CNN_output, 0.9, axis=0)
 
-DATA['GEFS_3_P10'] = np.quantile(GEFS_raw, 0.1, axis=0)
-DATA['GEFS_3_P50'] = np.quantile(GEFS_raw, 0.5, axis=0)
-DATA['GEFS_3_P90'] = np.quantile(GEFS_raw, 0.9, axis=0)
+DATA['GEFS_3_10p'] = np.quantile(GEFS_raw, 0.1, axis=0)
+DATA['GEFS_3_50p'] = np.quantile(GEFS_raw, 0.5, axis=0)
+DATA['GEFS_3_90p'] = np.quantile(GEFS_raw, 0.9, axis=0)
 
 # ==================== daily results ==================== #
 
@@ -135,13 +134,13 @@ LEADs_24H_hrs = LEADs_3H_hrs[inds_end]
 GEFS_accum_24, inds_start, inds_end = utils.accum_slide_window(GEFS_raw, accum_window, output_freq, skip_start)
 GEFS_accum_24[..., land_mask_bc] = np.nan
 
-DATA['CNN_24_P10'] = np.quantile(CNN_accum_24, 0.1, axis=0)
-DATA['CNN_24_P50'] = np.quantile(CNN_accum_24, 0.5, axis=0)
-DATA['CNN_24_P90'] = np.quantile(CNN_accum_24, 0.9, axis=0)
+DATA['CNN_24_10p'] = np.quantile(CNN_accum_24, 0.1, axis=0)
+DATA['CNN_24_50p'] = np.quantile(CNN_accum_24, 0.5, axis=0)
+DATA['CNN_24_90p'] = np.quantile(CNN_accum_24, 0.9, axis=0)
 
-DATA['GEFS_24_P10'] = np.quantile(GEFS_accum_24, 0.1, axis=0)
-DATA['GEFS_24_P50'] = np.quantile(GEFS_accum_24, 0.5, axis=0)
-DATA['GEFS_24_P90'] = np.quantile(GEFS_accum_24, 0.9, axis=0)
+DATA['GEFS_24_10p'] = np.quantile(GEFS_accum_24, 0.1, axis=0)
+DATA['GEFS_24_50p'] = np.quantile(GEFS_accum_24, 0.5, axis=0)
+DATA['GEFS_24_90p'] = np.quantile(GEFS_accum_24, 0.9, axis=0)
 
 # ==================== 3 days results ==================== #
 
@@ -157,13 +156,13 @@ LEADs_72H_hrs = LEADs_3H_hrs[inds_end]
 GEFS_accum_72, inds_start, inds_end = utils.accum_slide_window(GEFS_raw, accum_window, output_freq, skip_start)
 GEFS_accum_72[..., land_mask_bc] = np.nan
 
-DATA['CNN_72_P10'] = np.quantile(CNN_accum_72, 0.1, axis=0)
-DATA['CNN_72_P50'] = np.quantile(CNN_accum_72, 0.5, axis=0)
-DATA['CNN_72_P90'] = np.quantile(CNN_accum_72, 0.9, axis=0)
+DATA['CNN_72_10p'] = np.quantile(CNN_accum_72, 0.1, axis=0)
+DATA['CNN_72_50p'] = np.quantile(CNN_accum_72, 0.5, axis=0)
+DATA['CNN_72_90p'] = np.quantile(CNN_accum_72, 0.9, axis=0)
 
-DATA['GEFS_72_P10'] = np.quantile(GEFS_accum_72, 0.1, axis=0)
-DATA['GEFS_72_P50'] = np.quantile(GEFS_accum_72, 0.5, axis=0)
-DATA['GEFS_72_P90'] = np.quantile(GEFS_accum_72, 0.9, axis=0)
+DATA['GEFS_72_10p'] = np.quantile(GEFS_accum_72, 0.1, axis=0)
+DATA['GEFS_72_50p'] = np.quantile(GEFS_accum_72, 0.5, axis=0)
+DATA['GEFS_72_90p'] = np.quantile(GEFS_accum_72, 0.9, axis=0)
 
 # ==================== Plot ==================== #
 
@@ -176,7 +175,7 @@ ACCUM_strs = ['3 hourly', '1 day', '3 days']
 ACCUM_flags = [False, True, True,]
 LEADs = (LEADs_3H_hrs, LEADs_24H_hrs, LEADs_72H_hrs,)
 
-Ps = ['P10', 'P50', 'P90']
+Ps = ['10p', '50p', '90p']
 P_strs = ['10-th', '50-th', '90-th']
 
 EDGEs = [edge_bc, edge_sw]
@@ -200,6 +199,4 @@ for j, accum in enumerate(ACCUMs):
             plib.precip_map(data_pair, lon, lat, lead_hrs, accum_hrs, dt_utc_now, 
                             camp_precip, label_precip, linewidth_map, P_str, accum_str, 
                             edge, center_lon, shape_watershed_dir, PROVINCE, geom_US, 
-                            fig_keys, png_bch_name, scale_param='50m', font_text=14)
-            
-        
+                            fig_keys, png_bch_name, scale_param='50m', font_text=14)            
