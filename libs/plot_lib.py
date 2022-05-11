@@ -371,6 +371,8 @@ def precip_map(data_pair, lon, lat, lead_hrs, accum_hrs, dt_utc_now,
         CBar.set_label('[mm]', fontsize=font_text)
         CBar.outline.set_linewidth(2.5)
         output_dir = png_bch_name['dir']+TITLE_text
-        print(output_dir)
-        fig.savefig(output_dir, format='png', **fig_keys)
+
+        output_dir_now =  datetime.strftime(dt_utc_now, output_dir)
+        print(output_dir_now)
+        fig.savefig(output_dir_now, format='png', **fig_keys)
 
