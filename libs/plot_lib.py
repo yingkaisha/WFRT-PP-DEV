@@ -9,6 +9,7 @@ from cartopy.io.shapereader import natural_earth
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.patches as patches
 from matplotlib import transforms
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
@@ -376,3 +377,200 @@ def precip_map(data_pair, lon, lat, lead_hrs, accum_hrs, dt_utc_now,
         print(output_dir_now)
         fig.savefig(output_dir_now, format='png', **fig_keys)
 
+
+def ax_decorate_box(ax, font_text, left_flag=True, bottom_flag=True):
+    ax.xaxis.set_tick_params(labelsize=font_text)
+    ax.yaxis.set_tick_params(labelsize=font_text)
+    [j.set_linewidth(2.5) for j in ax.spines.values()]
+    ax.tick_params(axis="both", which="both", bottom=False, top=False, labelbottom=bottom_flag, left=False, right=False, labelleft=left_flag)
+    return ax
+
+def xcolor(key):
+    xcolor = {
+    "maroon":"#800000", "dark red":"#8B0000", "brown":"#A52A2A", "firebrick":"#B22222", "crimson":"#DC143C", "red":"#FF0000",
+    "tomato":"#FF6347", "coral":"#FF7F50", "indian red":"#CD5C5C", "light coral":"#F08080", "dark salmon":"#E9967A", "salmon":"#FA8072",
+    "light salmon":"#FFA07A", "orange red":"#FF4500", "dark orange":"#FF8C00", "orange":"#FFA500", "gold":"#FFD700", "dark golden rod":"#B8860B",
+    "golden rod":"#DAA520", "pale golden rod":"#EEE8AA", "dark khaki":"#BDB76B", "khaki":"#F0E68C", "olive":"#808000", "yellow":"#FFFF00",
+    "yellow green":"#9ACD32", "dark olive green":"#556B2F", "olive drab":"#6B8E23", "lawn green":"#7CFC00", "chart reuse":"#7FFF00", "green yellow":"#ADFF2F",
+    "dark green":"#006400", "green":"#008000", "forest green":"#228B22", "lime":"#00FF00", "lime green":"#32CD32", "light green":"#90EE90",
+    "pale green":"#98FB98", "dark sea green":"#8FBC8F", "medium spring green":"#00FA9A", "spring green":"#00FF7F", "sea green":"#2E8B57", "medium aqua marine":"#66CDAA",
+    "medium sea green":"#3CB371", "light sea green":"#20B2AA", "dark slate gray":"#2F4F4F", "teal":"#008080", "dark cyan":"#008B8B", "aqua":"#00FFFF",
+    "cyan":"#00FFFF", "light cyan":"#E0FFFF", "dark turquoise":"#00CED1", "turquoise":"#40E0D0", "medium turquoise":"#48D1CC", "pale turquoise":"#AFEEEE",
+    "aqua marine":"#7FFFD4", "powder blue":"#B0E0E6", "cadet blue":"#5F9EA0", "steel blue":"#4682B4", "corn flower blue":"#6495ED", "deep sky blue":"#00BFFF",
+    "dodger blue":"#1E90FF", "light blue":"#ADD8E6", "sky blue":"#87CEEB", "light sky blue":"#87CEFA", "midnight blue":"#191970",
+    "navy":"#000080", "dark blue":"#00008B", "medium blue":"#0000CD", "blue":"#0000FF", "royal blue":"#4169E1", "blue violet":"#8A2BE2",
+    "indigo":"#4B0082", "dark slate blue":"#483D8B", "slate blue":"#6A5ACD", "medium slate blue":"#7B68EE", "medium purple":"#9370DB", "dark magenta":"#8B008B",
+    "dark violet":"#9400D3", "dark orchid":"#9932CC", "medium orchid":"#BA55D3", "purple":"#800080", "thistle":"#D8BFD8", "plum":"#DDA0DD",
+    "violet":"#EE82EE", "magenta":"#FF00FF", "orchid":"#DA70D6", "medium violet red":"#C71585", "pale violet red":"#DB7093", "deep pink":"#FF1493",
+    "hot pink":"#FF69B4","light pink":"#FFB6C1","pink":"#FFC0CB","antique white":"#FAEBD7","beige":"#F5F5DC","bisque":"#FFE4C4",
+    "blanched almond":"#FFEBCD","wheat":"#F5DEB3","corn silk":"#FFF8DC","lemon chiffon":"#FFFACD","light golden rod yellow":"#FAFAD2","light yellow":"#FFFFE0",
+    "saddle brown":"#8B4513","sienna":"#A0522D","chocolate":"#D2691E","peru":"#CD853F","sandy brown":"#F4A460","burly wood":"#DEB887",
+    "tan":"#D2B48C","rosy brown":"#BC8F8F","moccasin":"#FFE4B5","navajo white":"#FFDEAD","peach puff":"#FFDAB9","misty rose":"#FFE4E1",
+    "lavender blush":"#FFF0F5","linen":"#FAF0E6","old lace":"#FDF5E6","papaya whip":"#FFEFD5","sea shell":"#FFF5EE","mint cream":"#F5FFFA",
+    "slate gray":"#708090","light slate gray":"#778899", "light steel blue":"#B0C4DE","lavender":"#E6E6FA","floral white":"#FFFAF0","alice blue":"#F0F8FF",
+    "ghost white":"#F8F8FF","honeydew":"#F0FFF0","ivory":"#FFFFF0","azure":"#F0FFFF","snow":"#FFFAFA","black":"#000000",
+    "dim gray":"#696969","gray":"#808080","dark gray":"#A9A9A9","silver":"#C0C0C0","light gray":"#D3D3D3","gainsboro":"#DCDCDC",
+    "white smoke":"#F5F5F5","white":"#FFFFFF"}
+    return xcolor[key]
+
+def plot_stn(DATA, fcst_hrs, accums, accum_strs, dt_utc_now, stn_name, COLORS, font_text, fig_keys, png_stn_name):
+#     PDT    
+#     utc_converter = pytz.utc
+#     dt_utc_now = utc_converter.localize(dt_utc_now)
+#     dt_utc_now = dt_utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
+    
+    dt_utc_now = dt_utc_now-timedelta(hours=8)
+    dt_ini_str = datetime.strftime(dt_utc_now, '%Y-%h-%d %H00 PST (-8 UTC)')
+    
+    fig = plt.figure(figsize=(18, 42), dpi=70)#fig_keys['dpi']
+    gs = gridspec.GridSpec(7, 1, height_ratios=[1, 1, 1, 1, 1, 1, 1])
+    ax1 = plt.subplot(gs[0, 0])
+    ax2 = plt.subplot(gs[1, 0])
+    ax3 = plt.subplot(gs[2, 0])
+    ax4 = plt.subplot(gs[3, 0])
+    ax5 = plt.subplot(gs[4, 0])
+    ax6 = plt.subplot(gs[5, 0])
+    ax7 = plt.subplot(gs[6, 0])
+    
+    AX = [ax1, ax2, ax3, ax4, ax5, ax6, ax7]
+    
+    plt.subplots_adjust(0, 0, 1, 1, hspace=0.4, wspace=0)
+    
+    # ===== Text ===== #
+    
+    handle_title = []
+    AX_text_order = []
+    gap = 0.14285+0.00625 #0.176
+    for i in range(7):
+        ax_temp = fig.add_axes([0.01, 0.99-i*gap, 0.375, 0.006], facecolor='w')
+        [j.set_linewidth(0.0) for j in ax_temp.spines.values()]
+        
+        ax_temp.tick_params(axis='both', left=False, top=False, right=False, bottom=False, 
+                            labelleft=False, labeltop=False, labelright=False, labelbottom=False)
+        AX_text_order.append(ax_temp)
+
+    AX_text = AX_text_order
+    # ===== Bars ===== #
+    
+    
+    STEPs = [3, 24]
+    # ---------- 3 hrs ---------- #
+    i = 0
+    ax = AX[i]
+    accum = accums[i]
+    accum_str = accum_strs[i]
+    fcst_hr = fcst_hrs[i]
+        
+    ax = ax_decorate_box(ax, font_text, left_flag=True, bottom_flag=True)
+    ax.grid(linestyle=':', color='k'); ax.xaxis.grid(False)
+        
+    dt_valid = []
+    for hrs in fcst_hr:
+        dt_valid.append(datetime.strftime(dt_utc_now+timedelta(hours=hrs), '%H00 %d %h'))
+    
+    for l, temp_h in enumerate(fcst_hr):
+        # ((bottom left), width, height)
+        ax.add_patch(patches.Rectangle((temp_h-STEPs[i], DATA['CNN_{}_min'.format(accum)][l]), STEPs[i], DATA['CNN_{}_max'.format(accum)][l], facecolor=COLORS[0], edgecolor='0.5', linewidth=1.5))
+        ax.add_patch(patches.Rectangle((temp_h-STEPs[i], DATA['CNN_{}_P10'.format(accum)][l]), STEPs[i], DATA['CNN_{}_P90'.format(accum)][l], facecolor=COLORS[1], edgecolor='0.5', linewidth=1.5))
+        ax.add_patch(patches.Rectangle((temp_h-STEPs[i], DATA['CNN_{}_P25'.format(accum)][l]), STEPs[i], DATA['CNN_{}_P75'.format(accum)][l], facecolor=COLORS[2], edgecolor='0.5', linewidth=1.5))
+        ax.hlines(y=DATA['CNN_{}_P50'.format(accum)][l], xmin=temp_h, xmax=temp_h, color='k', linestyle='--', linewidth=2.5);
+            
+    ax.set_xticks(fcst_hr);
+    ax.set_xticklabels(dt_valid, rotation='90');
+    ax.set_xlim([fcst_hrs[0][0]-6, fcst_hrs[0][-1]+3]);
+    
+    # ---------- 24 hrs ---------- #
+    i = 1
+    ax = AX[i]
+    accum = accums[i]
+    accum_str = accum_strs[i]
+    fcst_hr = fcst_hrs[i]
+        
+    ax = ax_decorate_box(ax, font_text, left_flag=True, bottom_flag=True)
+    ax.grid(linestyle=':', color='k'); ax.xaxis.grid(False)
+        
+    dt_valid = []
+    for hrs in fcst_hr:
+        dt_valid.append(datetime.strftime(dt_utc_now+timedelta(hours=hrs-STEPs[i]), '%d %h'))
+        
+    for l, temp_h in enumerate(fcst_hr):
+        # ((bottom left), width, height)
+        ax.add_patch(patches.Rectangle((temp_h-STEPs[i], DATA['CNN_{}_min'.format(accum)][l]), STEPs[i], DATA['CNN_{}_max'.format(accum)][l], facecolor=COLORS[0], edgecolor='0.5', linewidth=1.5))
+        ax.add_patch(patches.Rectangle((temp_h-STEPs[i], DATA['CNN_{}_P10'.format(accum)][l]), STEPs[i], DATA['CNN_{}_P90'.format(accum)][l], facecolor=COLORS[1], edgecolor='0.5', linewidth=1.5))
+        ax.add_patch(patches.Rectangle((temp_h-STEPs[i], DATA['CNN_{}_P25'.format(accum)][l]), STEPs[i], DATA['CNN_{}_P75'.format(accum)][l], facecolor=COLORS[2], edgecolor='0.5', linewidth=1.5))
+        ax.hlines(y=DATA['CNN_{}_P50'.format(accum)][l], xmin=temp_h-STEPs[i], xmax=temp_h, color='k', linestyle='--', linewidth=2.5);
+            
+    ax.set_xticks(fcst_hr-0.5*STEPs[i]);
+    ax.set_xticklabels(dt_valid, rotation='90');
+    ax.set_xlim([fcst_hrs[0][0]-6, fcst_hrs[0][-1]+3]);
+        
+    # ===== Lines ===== #
+    for i in range(2, 7, 1):
+        ax = AX[i]
+        accum = accums[i]
+        accum_str = accum_strs[i]
+        fcst_hr = fcst_hrs[i]
+        
+        ax = ax_decorate_box(ax, font_text, left_flag=True, bottom_flag=True)
+        ax.grid(linestyle=':', color='k'); ax.xaxis.grid(True)
+        
+        dt_valid = []
+        for hrs in fcst_hr:
+            dt_valid.append(datetime.strftime(dt_utc_now+timedelta(hours=hrs), '%H00 %d %h'))
+        
+        ax.fill_between(fcst_hr, DATA['CNN_{}_min'.format(accum)], DATA['CNN_{}_max'.format(accum)], color=COLORS[0])
+        ax.fill_between(fcst_hr, DATA['CNN_{}_P10'.format(accum)], DATA['CNN_{}_P90'.format(accum)], color=COLORS[1])
+        ax.fill_between(fcst_hr, DATA['CNN_{}_P25'.format(accum)], DATA['CNN_{}_P75'.format(accum)], color=COLORS[2])
+        handle_line = ax.plot(fcst_hr, DATA['CNN_{}_P50'.format(accum)], 'k--', lw=2.5, label='50th');
+        
+        ax.set_xticks(fcst_hr);
+        ax.set_xticklabels(dt_valid, rotation='90');
+        ax.set_xlim([fcst_hrs[0][0]-6, fcst_hrs[0][-1]+3]);
+    
+    # ===== Ticks & Legend ===== #
+    for i in range(7):
+        ax = AX[i]
+        accum = accums[i]
+        accum_str = accum_strs[i]
+        fcst_hr = fcst_hrs[i]
+        ax.set_ylim([0, 0.5+np.nanmax(DATA['CNN_{}_max'.format(accum)])*1.25])
+        #ax.set_xlabel('Valid time (accumulated hours backward)', fontsize=font_text);
+        ax.set_ylabel('[mm]', fontsize=font_text);
+        
+    for i in [0, 1, -1]:
+        
+        handle_title += string_partial_format(fig, AX_text[i], 0, 1, 'left', 'top',
+                                              ['Post-processed GEFS ', accum_strs[i], ' total precipitation ensemble at ', stn_name, '. Initialization time: ', dt_ini_str],
+                                              ['k',]*6, [font_text+2,]*6, ['normal', 'bold', 'normal', 'bold', 'normal', 'normal'])
+        
+    for i in range(2, 6, 1):
+        
+        handle_title += string_partial_format(fig, AX_text[i], 0, 1, 'left', 'top',
+                                              ['Post-processed GEFS accumulated total precipitation ensemble ', accum_strs[i], ', at ', stn_name, '. Initialization time: ', dt_ini_str],
+                                              ['k',]*6, [font_text+2,]*6, ['normal', 'bold', 'normal', 'bold', 'normal', 'normal'])
+        
+    for handle in handle_title:
+        handle.set_bbox(dict(facecolor='w', edgecolor='none', pad=0.0, zorder=6))
+        
+    handle_legneds = []
+    handle_legneds.append(patches.Patch(facecolor=COLORS[0], edgecolor='k', linewidth=0, label='min - max'))
+    handle_legneds.append(patches.Patch(facecolor=COLORS[1], edgecolor='k', linewidth=0, label='10th - 90th'))
+    handle_legneds.append(patches.Patch(facecolor=COLORS[2], edgecolor='k', linewidth=0, label='25th - 75th'))
+
+
+    
+    ax_lg2 = fig.add_axes([1.0, 1.0-0.04, 0.11, 0.04])
+    ax_lg2.set_axis_off()
+    LG2 = ax_lg2.legend(handles=handle_legneds+handle_line, bbox_to_anchor=(0.0, 0.5), ncol=1, loc=6, prop={'size':font_text}, fancybox=False);
+    LG2.get_frame().set_facecolor('w')
+    LG2.get_frame().set_linewidth(2.0)
+    LG2.get_frame().set_alpha(1.0)
+    
+    
+    output_dir = png_stn_name['dir']+png_stn_name['base_'].format(stn_name)
+    output_dir_now =  datetime.strftime(dt_utc_now, output_dir)
+    
+    print(output_dir_now)
+    fig.savefig(output_dir_now, format='png', **fig_keys)
+        
+        

@@ -16,7 +16,7 @@ current_time=$(date -u +%Y%m%d)
 # <---------- !!!! status file
 # Double check --> "status_dir_namelist" @ namelist_ubc.py
 nowcast_status="/oper_data/NowCastingML/example_output/${current_time}/nowcast_kyle.status"
-download_status="/oper_data/NowCastingML/GEFS_downloads/${current_time}_members/download.status"
+download_status="/scratch/NowCastingML/GEFS_downloads/${current_time}_members/download.status"
 # ------------------------------------- #
 
 run=true
@@ -51,8 +51,8 @@ while $run; do
             echo "Plot routine starts"
             python3 main_plot.py $current_time
          
-            rm -r /oper_data/NowCastingML/GEFS_downloads/${current_time}/
-            rm -r /oper_data/NowCastingML/GEFS_downloads/${current_time}_members/
+            rm -r /scratch/NowCastingML/GEFS_downloads/${current_time}/
+            rm -r /scratch/NowCastingML/GEFS_downloads/${current_time}_members/
 
             echo "Delete raw GEFS to free space"
             run=false

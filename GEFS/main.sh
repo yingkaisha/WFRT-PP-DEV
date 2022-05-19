@@ -13,7 +13,7 @@ current_time=$(date -u +%Y%m%d)
 #current_time='20220406'
 
 # ---------- UBC/NCAR Switch ---------- #
-download_status="/oper_data/NowCastingML/GEFS_downloads/${current_time}/download.status"
+download_status="/scratch/NowCastingML/GEFS_downloads/${current_time}/download.status"
 # ------------------------------------- #
 
 run=true

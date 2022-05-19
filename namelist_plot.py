@@ -27,3 +27,7 @@ png_bch_name['tail'] = '{:03d}.png'
 #png_bch_name['dir'] = '/oper_data/NowCastingML/example_output/'
 png_bch_name['dir'] = '/www/results/BCHGRD1/%y%m%d00/PNG/g2/'
 
+png_stn_name = {}
+png_stn_name['base_'] = '{}.BCHGRD1.pcp.png'
+#png_stn_name['dir'] = '/oper_data/NowCastingML/example_output/'
+png_stn_name['dir'] = '/www/results/BCHGRD1/%y%m%d00/PNG/g2/'

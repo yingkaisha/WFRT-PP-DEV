@@ -8,9 +8,9 @@ import numpy as np
 # ---------------------------------------------------------------- #
 
 # The path of near-real-time GEFS
-## download to oper_data
-path_gefs_nrt_namelist = '/oper_data/NowCastingML/GEFS_downloads/{}/'
-path_gefs_member_namelist = '/oper_data/NowCastingML/GEFS_downloads/{}_members/'
+## download to /scratch
+path_gefs_nrt_namelist = '/scratch/NowCastingML/GEFS_downloads/{}/'
+path_gefs_member_namelist = '/scratch/NowCastingML/GEFS_downloads/{}_members/'
 
 # Name convensions of GEFS individual members
 filename_memberc_namelist = 'gec{:02d}.t00z.pgrb2s.0p25.f{:03d}'
@@ -76,3 +76,17 @@ path_era5_namelist = BASE_dir+'BASE_ERA5_year{}_lead{}.zarr'
 path_era5_clim_namelist = BASE_dir+'BASE_ERA5_clim.zarr'
 path_CNN_namelist = BASE_dir+'AnEn_UNET3M_RAW_tune.hdf'
 
+STN_LOCs = {'BCK': (-123.91388888888889, 48.50333333333333),
+            'CMX': (-125.09444444444443, 49.643055555555556),
+            'COQ': (-122.77777777777777, 49.355555555555554),
+            'CRS': (-116.51666666666667, 49.1),
+            'ELK': (-125.76416666666667, 49.87277777777778),
+            'PYN': (-122.6375, 55.35),
+            'STA': (-122.32638888888889, 49.5575),
+            'WAH': (-121.61861111111111, 49.231944444444444),
+            'WON': (-121.8, 56.733333333333334),
+            'YRV': (-118.18333333333334, 50.96666666666667),
+            'YVR': (-123.18333333333334, 49.18333333333333),
+            'YXJ': (-120.73333333333333, 56.233333333333334),
+            'ING': (-125.11, 56.72),
+            'DLU': (-123.1672, 50.86)}

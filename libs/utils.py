@@ -169,6 +169,26 @@ def nearest_wraper(nav_lon, nav_lat, grid_z, out_lon, out_lat):
     return out.reshape(out_lon.shape)
 
     
+def accum_slide_window_stn(data, accum_window, output_freq, skip_start):
 
+    inds_start = []
+    inds_end = []
+    
+    EN, N_lead = data.shape
+
+    N_output = (N_lead - accum_window - skip_start) // output_freq + 1
+
+    Accum_output = np.empty((EN, N_output))
+
+    for n in range(N_output):
+
+        ind_start = skip_start+n*output_freq
+        ind_end = ind_start+accum_window
+        Accum_output[:, n, ...] = np.nansum(data[:, ind_start:ind_end, ...], axis=1)
+
+        inds_start.append(ind_start)
+        inds_end.append(ind_end)
+        
+    return Accum_output, inds_start, inds_end
     
     

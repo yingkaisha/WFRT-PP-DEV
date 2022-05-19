@@ -3,8 +3,8 @@
 
 # change is as: 'your_path/{}'
 ## UBC tombstone
-target_path = '/oper_data/NowCastingML/GEFS_downloads/{}'
-target_path_members = '/oper_data/NowCastingML/GEFS_downloads/{}_members'
+target_path = '/scratch/NowCastingML/GEFS_downloads/{}'
+target_path_members = '/scratch/NowCastingML/GEFS_downloads/{}_members'
 
 # The source of files. Formatter is the file name 
 url_fmt = 'https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.{}/00/atmos/pgrb2sp25/{}'
@@ -24,6 +24,7 @@ fcst_leads = ['009', '012', '015', '018', '021', '024', '027', '030', '033', '03
          '126', '129', '132', '135', '138', '141', '144', '147', '150', '153', '156', '159', '162',
          '165', '168']
 
+# ========== Debugging only ========== #
 # log path
 log_path = '/oper_data/NowCastingML/GEFS_tools-main/GEFS/'
 
